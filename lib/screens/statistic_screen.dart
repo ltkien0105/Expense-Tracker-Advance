@@ -1,15 +1,29 @@
+import 'package:expense_tracker_advance/widgets/bar_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class StatisticScreen extends StatefulWidget {
+import 'package:expense_tracker_advance/providers/expense_provider.dart';
+
+class StatisticScreen extends ConsumerStatefulWidget {
   const StatisticScreen({super.key});
 
   @override
-  State<StatisticScreen> createState() => _StatisticScreenState();
+  ConsumerState<StatisticScreen> createState() => _StatisticScreenState();
 }
 
-class _StatisticScreenState extends State<StatisticScreen> {
+class _StatisticScreenState extends ConsumerState<StatisticScreen> {
+  bool isWeek = true;
+  
   @override
   Widget build(BuildContext context) {
+    List<double> expensePrice;
+    if (isWeek) {
+      expensePrice =
+          ref.watch(expenseProvider.notifier).getListPriceByDayOfWeek();
+    } else {
+      expensePrice = ref.watch(expenseProvider.notifier).getListPriceByMonth();
+    }
+
     return Scaffold(
       body: Container(
         padding: const EdgeInsets.all(16),
@@ -44,20 +58,22 @@ class _StatisticScreenState extends State<StatisticScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      '\$295.95',
-                      style: TextStyle(
+                      '\$ ${ref.watch(expenseProvider.notifier).totalPrice}',
+                      style: const TextStyle(
                         fontSize: 50,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                       textAlign: TextAlign.start,
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Total spent this week',
-                      style: TextStyle(
+                      isWeek
+                          ? 'Total spent this week'
+                          : 'Total spent this month',
+                      style: const TextStyle(
                         fontSize: 20,
                         color: Colors.grey,
                       ),
@@ -71,7 +87,17 @@ class _StatisticScreenState extends State<StatisticScreen> {
               flex: 3,
               child: Container(
                 height: double.infinity,
-                color: Colors.black,
+                width: double.infinity,
+                alignment: Alignment.topLeft,
+                child: expensePrice.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No data, please add data to display the graph',
+                        ),
+                      )
+                    : BarGraph(
+                        summary: expensePrice,
+                      ),
               ),
             ),
             const SizedBox(height: 16),
@@ -82,7 +108,11 @@ class _StatisticScreenState extends State<StatisticScreen> {
                   Row(
                     children: [
                       OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            isWeek = true;
+                          });
+                        },
                         child: const Padding(
                           padding: EdgeInsets.symmetric(
                             vertical: 8,
@@ -97,7 +127,11 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       ),
                       const SizedBox(width: 16),
                       OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          setState(() {
+                            isWeek = false;
+                          });
+                        },
                         child: const Padding(
                           padding: EdgeInsets.symmetric(
                             vertical: 8,
@@ -124,12 +158,12 @@ class _StatisticScreenState extends State<StatisticScreen> {
                       ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: ListView.builder(
-                  //     itemCount: 5,
-                  //     itemBuilder: (context, index) => const ExpenseItem(),
-                  //   ),
-                  // )
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 5,
+                      itemBuilder: (context, index) => const Text('data'),
+                    ),
+                  )
                 ],
               ),
             ),

@@ -6,14 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracker_advance/models/expense.dart';
 import 'package:expense_tracker_advance/providers/expense_provider.dart';
 
-class AddExpense extends ConsumerStatefulWidget {
-  const AddExpense({super.key});
+class AddExpenseScreen extends ConsumerStatefulWidget {
+  const AddExpenseScreen({super.key});
 
   @override
-  ConsumerState<AddExpense> createState() => _AddExpenseState();
+  ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
-class _AddExpenseState extends ConsumerState<AddExpense> {
+class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   DateFormat formattedDate = DateFormat('dd/MM/yyyy');
   var now = DateTime.now();
 
@@ -206,7 +206,8 @@ class _AddExpenseState extends ConsumerState<AddExpense> {
                               context: context,
                               initialDate: now,
                               firstDate: DateTime(now.year - 1),
-                              lastDate: now,
+                              // lastDate: now,
+                              lastDate: DateTime(now.year, now.month + 1),
                             );
 
                             if (dateTime != null) {
